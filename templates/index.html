@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Presentation Suite | Gesture Control</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .slide-container {
+            aspect-ratio: 16/9;
+        }
+        
+        .webcam-feed {
+            aspect-ratio: 16/9;
+        }
+        
+        body {
+            background: linear-gradient(to right, #1a1a1a, #2d3748);
+        }
+
+        .page-overlay {
+            background: rgba(17, 24, 39, 0.85);
+        }
+        
+        .logo-container {
+            width: 150px;
+            height: 40px;
+            background: white;
+            padding: 5px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-image {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .gesture-icon {
+            font-size: 1.5rem;
+        }
+
+        .main-container {
+            max-width: 1920px;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-100">
+    <div class="page-overlay min-h-screen">
+        <div class="main-container mx-auto px-4 py-8">
+            <!-- Header -->
+            <header class="mb-8">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="logo-container">
+                            <!-- Corrected Logo URL -->
+                            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo-image">
+                        </div>
+                        <h1 class="text-2xl font-bold text-white">Smart Presentation Suite</h1>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Left Column - Webcam and Controls -->
+                <div class="lg:w-1/4 space-y-6">
+                    <!-- Webcam Feed -->
+                    <div class="glass-effect rounded-xl overflow-hidden shadow-lg">
+                        <div class="p-4 border-b border-gray-700">
+                            <h2 class="text-lg font-semibold text-white">Gesture Control</h2>
+                        </div>
+                        <div class="webcam-feed bg-gray-800 relative">
+                            <img src="{{ url_for('webcam_feed') }}" alt="Webcam feed" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+
+                    <!-- Gesture Guide -->
+                    <div class="glass-effect rounded-xl p-6 space-y-4 shadow-lg">
+                        <h3 class="text-lg font-semibold text-white">Gesture Guide</h3>
+                        <ul class="space-y-4 text-gray-300">
+                            <li class="flex items-center bg-gray-800 p-3 rounded-lg">
+                                <span class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-4 gesture-icon">👆</span>
+                                <span>Pinky Up - Previous Slide</span>
+                            </li>
+                            <li class="flex items-center bg-gray-800 p-3 rounded-lg">
+                                <span class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-4 gesture-icon">👍</span>
+                                <span>Thumb Up - Next Slide</span>
+                            </li>
+                            <li class="flex items-center bg-gray-800 p-3 rounded-lg">
+                                <span class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-4 gesture-icon">☝️</span>
+                                <span>Index Up - Draw Annotation</span>
+                            </li>
+                            <li class="flex items-center bg-gray-800 p-3 rounded-lg">
+                                <span class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center mr-4 gesture-icon">🖐️</span>
+                                <span>Three Fingers - Clear Last</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right Column - Presentation Display -->
+                <div class="lg:w-3/4">
+                    <div class="glass-effect rounded-xl overflow-hidden shadow-lg">
+                        <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                            <div class="flex items-center space-x-4">
+                                <h2 class="text-lg font-semibold text-white">Presentation View</h2>
+                                <span class="text-gray-400 text-sm px-3 py-1 bg-gray-800 rounded-full" id="slide-counter">
+                                    Slide 1 of {{ total_slides }}
+                                </span>
+                            </div>
+                            <div class="flex space-x-4">
+                                <!-- File Upload -->
+                                <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data" class="flex items-center">
+                                    <label class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg cursor-pointer transition duration-200">
+                                        <span class="flex items-center">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                            </svg>
+                                            Upload PPTX
+                                        </span>
+                                        <input type="file" name="file" accept=".pptx" class="hidden" onchange="this.form.submit()">
+                                    </label>
+                                </form>
+                                <!-- Fullscreen button -->
+                                <button onclick="goFullScreen()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition duration-200">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0 0l-5-5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                                    </svg>
+                                    Fullscreen
+                                </button>
+                            </div>
+                        </div>
+                        <div id="presentation-container" class="slide-container bg-gray-900">
+                            <img src="{{ url_for('slide_feed') }}" alt="Current slide" class="w-full h-full object-contain">
+                        </div>
+                        <!-- Manual Navigation Controls -->
+                        <div class="p-4 border-t border-gray-700 flex justify-center items-center space-x-4">
+                            <button onclick="previousSlide()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center transition duration-200">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                                Previous
+                            </button>
+                            <button onclick="nextSlide()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center transition duration-200">
+                                Next
+                                <svg class="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        let totalSlides = {{ total_slides }};
+
+        function updateSlideCounter() {
+            fetch('/get_current_slide')
+                .then(response => response.json())
+                .then(data => {
+                    currentSlide = data.current_slide;
+                    totalSlides = data.total_slides;
+                    document.getElementById('slide-counter').textContent = `Slide ${currentSlide} of ${totalSlides}`;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function goFullScreen() {
+            var elem = document.getElementById('presentation-container');
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        function previousSlide() {
+            fetch('/previous_slide', { method: 'POST' })
+                .then(() => {
+                    if (currentSlide > 1) {
+                        currentSlide--;
+                        updateSlideCounter();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function nextSlide() {
+            fetch('/next_slide', { method: 'POST' })
+                .then(() => {
+                    if (currentSlide < totalSlides) {
+                        currentSlide++;
+                        updateSlideCounter();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Update counter periodically
+        setInterval(updateSlideCounter, 1000);
+
+        // Initialize counter
+        updateSlideCounter();
+    </script>
+</body>
+</html>
