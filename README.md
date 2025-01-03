@@ -1,2 +1,23 @@
-# Smart-Presentation-Suite
-A web app that converts `.pptx` presentations to images and lets users navigate and annotate slides using hand gestures via webcam. Upload PPTX files, convert slides to images, and interact with the slides using gestures like swiping for navigation and drawing for annotations in real time.
+PPTX to Image Viewer with Hand Gesture Control
+
+This web application allows users to upload a `.pptx` file, which is then converted to images for each slide. The slides can be navigated through hand gestures captured by the webcam, such as swiping to the next or previous slide, or drawing annotations. 
+
+## Features:
+- Upload and convert `.pptx` files to images.
+- Navigate through slides using hand gestures.
+- Draw annotations on slides using gestures.
+- Real-time webcam feed with hand tracking.
+
+## Requirements:
+- Python 3.x
+- Flask
+- OpenCV
+- cvzone
+- python-pptx
+- pywin32
+
+## Installation:
+1. Clone the repository.
+2. Install the dependencies:
+   ```bash
+   pip install -r requirements.txt
